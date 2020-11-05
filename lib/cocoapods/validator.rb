@@ -587,10 +587,22 @@ module Pod
       app_target.build_configurations.each do |config|
         config.build_settings.delete('ASSETCATALOG_COMPILER_APPICON_NAME')
       end
+      add_excluded_arch(app_project)
       app_project.save
       app_project.recreate_user_schemes
     end
 
+    def add_excluded_arch(project)
+        exclude_arch = RUBY_PLATFORM.include?('x86_64') ? 'arm64' : 'x86_64'
+        project.build_configurations.each do |config|
+          settings = project.build_settings(config.name)
+          settings['EXCLUDED_ARCHS[sdk=appletvsimulator*]'] = exclude_arch
+          settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = exclude_arch
+          settings['EXCLUDED_ARCHS[sdk=macosx*]'] = exclude_arch
+          settings['EXCLUDED_ARCHS[sdk=watchsimulator*]'] = exclude_arch
+        end
+    end
+    
     def add_app_project_import
       app_project = Xcodeproj::Project.open(validation_dir + 'App.xcodeproj')
       app_target = app_project.targets.first
@@ -620,6 +632,7 @@ module Pod
       deployment_target = spec.subspec_by_name(subspec_name).deployment_target(consumer.platform_name)
       configure_pod_targets(@installer.target_installation_results)
       validate_dynamic_framework_support(@installer.aggregate_targets, deployment_target)
+      add_excluded_arch(@installer.pods_project)
       @installer.pods_project.save
     end
 
