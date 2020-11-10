@@ -22,6 +22,9 @@ To install release candidates run `[sudo] gem install cocoapods --pre`
 
 ##### Bug Fixes
 
+* Inject EXCLUDED_ARCHS into App and Pod projects when validating to address link failures due to arm simulator support introduced by Xcode 12.  
+  [Mark Woollard](https://github.com/mwoollard)
+
 * Do not add dependencies to 'Link Binary With Libraries' phase.  
   [Dimitris Koutsogiorgas](https://github.com/dnkoutso)
   [#10133](https://github.com/CocoaPods/CocoaPods/pull/10133)
